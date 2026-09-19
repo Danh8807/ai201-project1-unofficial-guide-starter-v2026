@@ -20,12 +20,12 @@ pipeline earns credit; *"80% seemed reasonable"* does not.
 ## 1. Retrieved chunks contain the answer
 
 For at least 4 of my 5 test questions, the retrieved chunks include one that
-contains the answer.
+contains the answer. 
 
 **Why this target:**
 <!-- e.g. "One of my questions is about a topic only two documents mention, so
      I expect that one to be hard." -->
-
+Because the corpus is relatively big and diverse, so the answer could be lying deep down, and I expect it to be a hard task for the model to find that within 4 tries. 
 ---
 
 ## 2. Every answer names a source
@@ -35,7 +35,7 @@ Every answer the system produces names at least one source document.
 **Why this target:**
 <!-- Why all five and not four? What about your setup makes that achievable —
      or what would have to go wrong for it not to be? -->
-
+Because each answer must be concise and relevant to the corpus. Giving the source document help the reader to get their and verify the information
 ---
 
 ## 3. The relevance gate stops out-of-corpus questions
@@ -52,11 +52,12 @@ in at least 4 of 5 tries.
 **Why this target:**
 <!-- What did your distances look like when you set the cutoff in Milestone 4?
      Was there a clean gap, or did the two groups overlap? -->
-
+Because it can cause hallucination and give out wrong answer.
 ---
 
 ## 4. Something about your chunks
 
+The chunk must be at least 200 characters and at most 400 characters. 
 <!-- YOU WRITE THIS ONE.
 
      How would you know if your chunks were the right size? Name something
@@ -73,12 +74,12 @@ in at least 4 of 5 tries.
 
 **Why this target:**
 
-
+Because I think it should be the right length for a chunk, not too short, not too long. 
 
 ---
 
 ## 5. Your choice
-
+The answer should be no more than 50 words, and it should contain the expected term.
 <!-- YOU WRITE THIS ONE TOO.
 
      Pick something you actually care about getting right. It could be about
@@ -90,7 +91,7 @@ in at least 4 of 5 tries.
 
 
 **Why this target:**
-
+Because the answer should short and concise, and it should have the expected term to draw connecting to the question. 
 
 
 ---

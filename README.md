@@ -25,9 +25,9 @@
      questions your system answers. Write it for someone who has never seen
      this repo.
 
-     Milestone 5. -->
+     Milestone 5. --> This project is an unofficial advising assistant built to help university students navigate academic policies, course selection, and campus administrative procedures. Using a focused corpus of university handbooks, policy sheets, and course guides, the system answers everyday logistical questions such as major declaration deadlines, pass/fail options, and graduation requirements. It pairs vector-based semantic search with distance-gated retrieval to locate exact policy excerpts and generate direct, grounded answers. If a query falls outside the available campus documents, the system stops hallucination by refusing to answer rather than guessing.
 
-## Chunking Strategy
+## Chunking Strategy 
 
 **Chunk size:**
 **Overlap:**
@@ -53,29 +53,55 @@
 
      Milestone 3. -->
 
-**Chunk 1** — source: `` — produced by: ``
+**Chunk 1** — source: `thread_bike_commute.txt#0` — produced by: `chunker.py::split_documents`
 
 ```
+THREAD: Anything specific for first-generation students?
+
+--- reply 1 (33 votes) ---
+The advising office has a specific programme and it is genuinely good, but it is opt-in and badly publicised. Ask for it by name.
 ```
 
-**Chunk 2** — source: `` — produced by: ``
+**Chunk 2** — source: `thread_first_gen.txt#0` — produced by: `chunker.py::split_documents`
 
 ```
+THREAD: Anything specific for first-generation students?
+
+--- reply 1 (33 votes) ---
+The advising office has a specific programme and it is genuinely good, but it is opt-in and badly publicised. Ask for it by name.
 ```
 
-**Chunk 3** — source: `` — produced by: ``
+**Chunk 3** — source: `thread_laptop_specs.txt#1` — produced by: `chunker.py::split_documents`
 
 ```
+THREAD: How much laptop do I actually need for CS courses?
+
+--- reply 2 (18 votes) ---
+Adding: the lab machines exist and are better than anything you'll buy. For the heavy assignments people just use those.
 ```
 
-**Chunk 4** — source: `` — produced by: ``
+**Chunk 4** — source: `thread_office_hours_etiquette.txt#1` — produced by: `chunker.py::split_documents`
 
 ```
+THREAD: Is it weird to go to office hours with no specific question?
+
+--- reply 2 (29 votes) ---
+They're usually empty. You are doing the instructor a favour by turning up.
+
+--- reply 3 (18 votes) ---
+If it helps, treat it as a standing appointment. Go every week for a month and it stops feeling like a thing.
 ```
 
-**Chunk 5** — source: `` — produced by: ``
+**Chunk 5** — source: `thread_roommate_conflict.txt#1` — produced by: `chunker.py::split_documents`
 
 ```
+THREAD: Roommate situation isn't working. What now?
+
+--- reply 2 (14 votes) ---
+Room changes happen at the semester boundary almost always, and mid-semester only in fairly serious cases.
+
+--- reply 3 (33 votes) ---
+Write down specifics before the meeting. 'It's not working' is hard to act on; 'guests four nights a week past 2am'is not.
 ```
 
 ## Sample Answer
@@ -83,14 +109,19 @@
 <!-- One complete question and answer, pasted as text, with the source line
      visible. Milestone 4. -->
 
-**Question:**
+**Question:** "When can I declare my major?"
 
 **Answer:**
 
 ```
+You can declare your major at the end of your second semester, or later if you need to. 
+
+Source: admin_declaring_a_major.txt
+
+Sources retrieved: admin_add_drop_deadline.txt, admin_declaring_a_major.txt, admin_graduation_requirements.txt, admin_pass_fail_option.txt, admin_study_abroad.txt
 ```
 
-**My relevance cutoff:**
+**My relevance cutoff:**: 0.6 
 
 <!-- The number you set in config.py, and how you got there.
 
@@ -102,8 +133,16 @@
      Milestone 4. -->
 
 | Question | In corpus? | Best distance |
-|---|---|---|
-|  |  |  |
+|"Does work-study affect your financial aid?"                 |Yes|0.341|
+|"When can I declare my major?"                               |Yes|0.308|
+|"What is the opening hour of the library?"                   |Yes|0.235|
+|"Where to sit at the library?"                               |Yes|0.349|
+|"What is the transit shuttle schedule?"                      |Yes|0.383|
+|"What is the capital of Mongolia?                            |No |0.825|
+|"How do I change the oil in a diesel engine?"                |No |0.850|
+|"Who won the 1994 World Cup?"                                |No |0.846|
+|"What is the recommended dosage of ibuprofen for a headache?"|No |0.849|
+|"How do I write a for loop in Rust?"                         |No |0.864|
 
 ## How I Used AI
 
@@ -116,9 +155,9 @@
 
      Milestone 5. -->
 
-**1.**
+**1.** I asked Claude to write the chunking function. It came back with a complete chunking function with overlap. 
 
-**2.**
+**2.** I realize that it is better to include the thread title in each chunk, so I asked Claude to include that in the chunking function. It came back with some codes and I changed my chunking function based on that. 
 
 <!-- ── Stretch features ─────────────────────────────────────────────────────
      Doing one? Say so here BEFORE you start. A feature this README never

@@ -97,7 +97,85 @@ def split_documents(documents: list[Document]) -> list[Chunk]:
       - Would splitting on paragraph breaks keep more thoughts intact than
         splitting on a character count?
     """
-    return fallback_split(documents)
+    chunk_size = config.CHUNK_SIZE
+    overlap = config.CHUNK_OVERLAP
+    if overlap >= chunk_size:
+        raise ValueError("overlap has to be smaller than chunk_size")
+
+    import re
+
+    def split_into_sentences(paragraph: str) -> list[str]:
+        pieces = re.split(r"(?<=[.!?])\s+", paragraph.strip())
+        return [p for p in pieces if p]
+
+    def pack_sentences(sentences: list[str]) -> list[str]:
+        pieces: list[str] = []
+        current = ""
+        for sentence in sentences:
+            candidate = f"{current} {sentence}".strip() if current else sentence
+            if len(candidate) <= chunk_size:
+                current = candidate
+            else:
+                if current:
+                    pieces.append(current)
+                    tail = current[-overlap:] if overlap else ""
+                    current = f"{tail} {sentence}".strip()
+                else:
+                    current = sentence
+                if len(current) > chunk_size * 1.5:
+                    pieces.append(current)
+                    current = ""
+        if current:
+            pieces.append(current)
+        return pieces
+
+    chunks: list[Chunk] = []
+    for doc in documents:
+        paragraphs = [p.strip() for p in re.split(r"\n\s*\n", doc.text) if p.strip()]
+        if not paragraphs:
+            continue
+
+        # First paragraph's first line = the document's title/heading.
+        # We'll prepend this to every chunk from this doc except chunk #0,
+        # which already contains it naturally.
+        title = paragraphs[0].splitlines()[0].strip()
+
+        pieces: list[str] = []
+        buffer = ""
+        for para in paragraphs:
+            if len(para) > chunk_size:
+                if buffer:
+                    pieces.append(buffer)
+                    buffer = ""
+                pieces.extend(pack_sentences(split_into_sentences(para)))
+                continue
+
+            candidate = f"{buffer}\n\n{para}" if buffer else para
+            if len(candidate) <= chunk_size:
+                buffer = candidate
+            else:
+                if buffer:
+                    pieces.append(buffer)
+                buffer = para
+        if buffer:
+            pieces.append(buffer)
+
+        for index, piece in enumerate(pieces):
+            # Prepend the title to every chunk after the first, unless it's
+            # already there (e.g. short docs that fit in one chunk).
+            if index > 0 and not piece.startswith(title):
+                piece = f"{title}\n\n{piece}"
+
+            chunks.append(
+                Chunk(
+                    text=piece,
+                    source=doc.source,
+                    index=index,
+                    produced_by="chunker.py::split_documents",
+                )
+            )
+
+    return chunks
 
 
 def describe(chunks: list[Chunk]) -> str:
