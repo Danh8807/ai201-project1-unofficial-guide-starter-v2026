@@ -93,7 +93,18 @@ The answer should be no more than 50 words, and it should contain the expected t
 **Why this target:**
 Because the answer should short and concise, and it should have the expected term to draw connecting to the question. 
 
-
+**Revised in unit 2:** No more than 50 words, contains the expected term,
+> **and is not a refusal or a dodge** (per `scorer.py::is_refusal` /
+> `dodges_the_question`).
+>
+> **Why revised:** I wrote "contains the expected term" meaning "actually
+> answers using that term," but `scorer.py`'s own bag-of-stems match doesn't
+> check that — it let the library-hours answer ("the opening hour is not
+> mentioned...") pass, because "library" and "hour" both appear even though
+> the system explicitly declined to answer. I couldn't measure "contains the
+> expected term" the way I meant it without also checking whether the answer
+> was a real attempt rather than a dodge — that's a measurement gap, not a
+> target I simply missed (I did hit 5/5 literally).
 ---
 
 <!-- ─────────────────────────────────────────────────────────────────────────

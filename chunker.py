@@ -160,6 +160,21 @@ def split_documents(documents: list[Document]) -> list[Chunk]:
         if buffer:
             pieces.append(buffer)
 
+        MIN_CHUNK_SIZE = 200
+
+        merged: list[str] = []
+        for piece in pieces:
+            if merged and len(piece) < MIN_CHUNK_SIZE:
+                merged[-1] = f"{merged[-1]}\n\n{piece}"
+            else:
+                merged.append(piece)
+
+        if len(merged) > 1 and len(merged[0]) < MIN_CHUNK_SIZE:
+            merged[1] = f"{merged[0]}\n\n{merged[1]}"
+            merged = merged[1:]
+
+        pieces = merged
+
         for index, piece in enumerate(pieces):
             # Prepend the title to every chunk after the first, unless it's
             # already there (e.g. short docs that fit in one chunk).
